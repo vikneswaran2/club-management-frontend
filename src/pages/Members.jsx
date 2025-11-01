@@ -1,24 +1,45 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { getMembers, addMember, deleteMember } from "../api";
 
 export default function Members() {
-  const [members, setMembers] = useState([
-    { name: "Administrator", email: "admin@club.org", role: "admin" },
-    { name: "Coordinator", email: "coord@club.org", role: "coordinator" },
-    { name: "Member One", email: "m1@club.org", role: "member" },
-  ]);
-
+  const [members, setMembers] = useState([]);
   const [newMember, setNewMember] = useState({ name: "", email: "", role: "" });
 
-  const handleAdd = () => {
-    if (!newMember.name || !newMember.email || !newMember.role)
-      return alert("Fill all fields");
-    setMembers([...members, newMember]);
-    setNewMember({ name: "", email: "", role: "" });
-  };
+  useEffect(() => {
+    fetchMembers();
+  }, []);
 
-  const handleDelete = (index) => {
-    setMembers(members.filter((_, i) => i !== index));
-  };
+  async function fetchMembers() {
+    try {
+      const data = await getMembers();
+      setMembers(data.members || []);
+    } catch {
+      alert("Failed to load members");
+    }
+  }
+
+  async function handleAdd() {
+    if (!newMember.name || !newMember.email || !newMember.role) {
+      alert("Fill all fields");
+      return;
+    }
+    try {
+      await addMember(newMember);
+      setNewMember({ name: "", email: "", role: "" });
+      fetchMembers();
+    } catch {
+      alert("Failed to add member");
+    }
+  }
+
+  async function handleDelete(id) {
+    try {
+      await deleteMember(id);
+      fetchMembers();
+    } catch {
+      alert("Failed to delete member");
+    }
+  }
 
   return (
     <div className="container">
@@ -52,34 +73,20 @@ export default function Members() {
       <table>
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Role</th>
-            <th>Actions</th>
+            <th>Name</th><th>Email</th><th>Role</th><th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          {members.map((m, i) => (
-            <tr key={i}>
+          {members.map((m) => (
+            <tr key={m.id || m.email}>
               <td>{m.name}</td>
               <td>{m.email}</td>
+              <td style={{fontWeight: "bold", color:
+                m.role === "admin" ? "blue" :
+                m.role === "coordinator" ? "green" : "gray"
+              }}>{m.role}</td>
               <td>
-                <span
-                  style={{
-                    color:
-                      m.role === "admin"
-                        ? "blue"
-                        : m.role === "coordinator"
-                        ? "green"
-                        : "gray",
-                    fontWeight: "bold",
-                  }}
-                >
-                  {m.role}
-                </span>
-              </td>
-              <td>
-                <button onClick={() => handleDelete(i)}>Delete</button>
+                <button onClick={() => handleDelete(m.id)}>Delete</button>
               </td>
             </tr>
           ))}

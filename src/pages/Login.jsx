@@ -28,23 +28,13 @@ export default function Login() {
     }}>
       <div className="container" style={{ maxWidth: "400px", textAlign: "center" }}>
         <h2>Club Login (Demo)</h2>
-        <input
-          className="input-field"
-          placeholder="ID (admin / coord / member)"
-          value={id}
-          onChange={(e) => setId(e.target.value)}
-        />
-        <input
-          type="password"
-          className="input-field"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+        <input className="input-field" placeholder="ID (admin / coord / member)" value={id} onChange={(e) => setId(e.target.value)} />
+        <input type="password" className="input-field" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
         <button onClick={handleLogin}>Sign In</button>
         <p style={{ marginTop: "10px", fontSize: "14px" }}>
           Demo Credentials: <br />
-          admin / coord / member <br /> Passwords: admin123 / coord123 / member123
+          admin / coord / member <br />
+          Passwords: admin123 / coord123 / member123
         </p>
       </div>
     </div>

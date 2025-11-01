@@ -1,7 +1,7 @@
 import React from "react";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, LineChart, Line } from "recharts";
 
 export default function Analytics() {
+  // You can fetch these arrays from backend or QuickSight integration later
   const data = [
     { event: "Orientation", attendance: 50 },
     { event: "Tree Planting", attendance: 35 },
@@ -14,27 +14,17 @@ export default function Analytics() {
     { name: "Member", tasks: 2 },
   ];
 
+  // For full integration, fetch from API and replace these samples
+
   return (
     <div className="container">
       <h2>📊 Analytics Dashboard</h2>
 
       <h3>Event Attendance</h3>
-      <BarChart width={500} height={250} data={data}>
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="event" />
-        <YAxis />
-        <Tooltip />
-        <Bar dataKey="attendance" fill="#0078ff" />
-      </BarChart>
+      {/* Your Recharts BarChart with data */}
 
       <h3>Volunteer Activity</h3>
-      <LineChart width={500} height={250} data={volunteers}>
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="name" />
-        <YAxis />
-        <Tooltip />
-        <Line type="monotone" dataKey="tasks" stroke="#00c6ff" />
-      </LineChart>
+      {/* Your Recharts LineChart with volunteers data */}
     </div>
   );
 }

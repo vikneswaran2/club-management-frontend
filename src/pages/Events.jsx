@@ -1,11 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { getEvents, addEvent, deleteEvent } from "../api";
 
 export default function Events() {
-  const [events, setEvents] = useState([
-    { title: "Orientation", date: "2025-12-01", tasks: 1, self: "Yes" },
-    { title: "Tree Planting", date: "2025-11-20", tasks: 1, self: "No" },
-  ]);
-
+  const [events, setEvents] = useState([]);
   const [newEvent, setNewEvent] = useState({
     title: "",
     date: "",
@@ -13,15 +10,41 @@ export default function Events() {
     self: "No",
   });
 
-  const handleAdd = () => {
-    if (!newEvent.title || !newEvent.date) return alert("Fill event details!");
-    setEvents([...events, newEvent]);
-    setNewEvent({ title: "", date: "", tasks: 0, self: "No" });
-  };
+  useEffect(() => {
+    fetchEvents();
+  }, []);
 
-  const handleDelete = (index) => {
-    setEvents(events.filter((_, i) => i !== index));
-  };
+  async function fetchEvents() {
+    try {
+      const data = await getEvents();
+      setEvents(data.events || []);
+    } catch {
+      alert("Failed to load events");
+    }
+  }
+
+  async function handleAdd() {
+    if (!newEvent.title || !newEvent.date) {
+      alert("Fill event details!");
+      return;
+    }
+    try {
+      await addEvent(newEvent);
+      setNewEvent({ title: "", date: "", tasks: 0, self: "No" });
+      fetchEvents();
+    } catch {
+      alert("Failed to add event");
+    }
+  }
+
+  async function handleDelete(id) {
+    try {
+      await deleteEvent(id);
+      fetchEvents();
+    } catch {
+      alert("Failed to delete event");
+    }
+  }
 
   return (
     <div className="container">
@@ -53,22 +76,18 @@ export default function Events() {
       <table>
         <thead>
           <tr>
-            <th>Title</th>
-            <th>Date</th>
-            <th>Tasks</th>
-            <th>Self-Attendance</th>
-            <th>Actions</th>
+            <th>Title</th><th>Date</th><th>Tasks</th><th>Self-Attendance</th><th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          {events.map((e, i) => (
-            <tr key={i}>
+          {events.map((e) => (
+            <tr key={e.id || e.title}>
               <td>{e.title}</td>
               <td>{e.date}</td>
               <td>{e.tasks}</td>
               <td>{e.self}</td>
               <td>
-                <button onClick={() => handleDelete(i)}>Delete</button>
+                <button onClick={() => handleDelete(e.id)}>Delete</button>
               </td>
             </tr>
           ))}
